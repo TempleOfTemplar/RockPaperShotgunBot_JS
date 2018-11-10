@@ -15,11 +15,13 @@ const bot = new Telegraf('771682963:AAEmFJwxI3yVxIILYYWkSXfquQqa_hUsvzk', {
 });
 
 let totalGames = 0, wins = 0, loses = 0;
-bot.start((ctx) => ctx.reply('Что выбираешь?', testMenu).then(() => {
-    ctx.reply('about', aboutMenu)
-}));
+
+bot.start((ctx) => {
+    ctx.reply('Что выбираешь?', testMenu)
+});
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 bot.on('sticker', (ctx) => ctx.reply('👍'));
+bot.hears('/score', (ctx) => displayScore(ctx));
 
 const testMenu = Telegraf.Extra
     .markdown()
@@ -29,16 +31,9 @@ const testMenu = Telegraf.Extra
         m.callbackButton('Бумага', 'p')
     ]));
 
-const aboutMenu = Telegraf.Extra
-    .markdown()
-    .markup((m) => m.keyboard([
-        m.callbackButton('Посмотреть счёт', 'score')
-    ]).resize());
-
 bot.action('r', (ctx) => game(ctx));
 bot.action('p', (ctx) => game(ctx));
 bot.action('s', (ctx) => game(ctx));
-bot.action('score', (ctx) => displayScore(ctx));
 
 bot.startPolling();
 
@@ -67,7 +62,7 @@ function game(ctx) {
         case "ps":
         case "sr":
             totalGames++;
-            loses--;
+            loses++;
             ctx.reply(choicesToText(userChoice, computerChoice) + "\n (Ты Проиграл!)");
             break;
         case "rr":
